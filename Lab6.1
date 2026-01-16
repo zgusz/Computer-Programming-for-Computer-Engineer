@@ -1,0 +1,107 @@
+#include <stdio.h>
+#include <string.h>
+
+struct studentNode {
+    char name[20];
+    int age;
+    char sex;
+    float gpa;
+    struct studentNode *next;
+    struct studentNode *back;
+};
+
+void ShowAll(struct studentNode *walk);
+struct studentNode* AddNode(struct studentNode **walk, char name[], int age, char sex, float gpa);
+void InsNode(struct studentNode *walk, char name[], int age, char sex, float gpa, struct studentNode **begin);
+void GoBack(struct studentNode **now);
+void DelNode(struct studentNode **walk, struct studentNode **begin);
+
+
+int main() {
+    struct studentNode *start, *now;
+    start = NULL;
+
+    now = AddNode(&start, (char*)"one", 6, 'M', 3.11); ShowAll(start);
+    now = AddNode(&start, (char*)"two", 8, 'F', 3.22); ShowAll(start);
+
+    InsNode(now, (char*)"three", 10, 'M', 3.33, &start); ShowAll(start);
+    InsNode(now, (char*)"four", 12, 'F', 3.44, &start); ShowAll(start);
+
+    GoBack(&now);
+
+    DelNode(&now, &start); ShowAll(start);
+    DelNode(&now, &start); ShowAll(start);
+    DelNode(&now, &start); ShowAll(start);
+
+    return 0;
+}
+
+void ShowAll(struct studentNode *walk) {
+    while (walk != NULL) {
+        printf("%s ", walk->name);
+        walk = walk->next;
+    }
+    printf("\n");
+}
+
+struct studentNode* AddNode(struct studentNode **walk, char name[], int age, char sex, float gpa) {
+    struct studentNode *temp = NULL;
+    while (*walk != NULL) {
+        temp = *walk;
+        walk = &(*walk)->next;
+    }
+    *walk = new struct studentNode;
+    strcpy((*walk)->name, name);
+    (*walk)->age = age;
+    (*walk)->sex = sex;
+    (*walk)->gpa = gpa;
+    (*walk)->next = NULL;
+    (*walk)->back = temp;
+    return *walk;
+}
+
+void InsNode(struct studentNode *walk, char name[], int age, char sex, float gpa, struct studentNode **begin) {
+    if (walk == NULL) return;
+    struct studentNode *newNode = new struct studentNode;
+    strcpy(newNode->name, name);
+    newNode->age = age;
+    newNode->sex = sex;
+    newNode->gpa = gpa;
+
+    newNode->next = walk;
+    newNode->back = walk->back;
+
+    if (walk->back != NULL) {
+        walk->back->next = newNode;
+    } else {
+        *begin = newNode;
+    }
+    walk->back = newNode;
+}
+
+void GoBack(struct studentNode **now) {
+    if (*now != NULL && (*now)->back != NULL) {
+        *now = (*now)->back;
+    }
+}
+
+void DelNode(struct studentNode **walk, struct studentNode **begin) {
+    if (*walk == NULL) return;
+    struct studentNode *temp;
+
+    if ((*walk)->back != NULL) {
+        (*walk)->back->next = (*walk)->next;
+    } else {
+        *begin = (*walk)->next;
+    }
+
+    if ((*walk)->next != NULL) {
+        (*walk)->next->back = (*walk)->back;
+        temp = (*walk)->next;
+    } else {
+        temp = (*walk)->back;
+    }
+
+    delete *walk;
+    *walk = temp;
+}
