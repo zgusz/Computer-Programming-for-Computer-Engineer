@@ -1,0 +1,61 @@
+#include <stdio.h>
+
+int *KnapsackDP(int *w, int *v, int n, int wx){
+    int u[n][wx + 1];
+    int selected[n][wx + 1];
+    int *x;
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j <= wx; j++) {
+            int a;
+            if (i - 1 < 0) {
+                a = 0;
+            } else {
+                a = u[i - 1][j];
+            }
+
+            int b;
+            if (j - w[i] < 0) {
+                b = -999999;
+            } else if (j - w[i] == 0 || i - 1 < 0) {
+                b = v[i];
+            } else {
+                b = u[i - 1][j - w[i]] + v[i];
+            }
+
+            if (a > b) {
+                u[i][j] = a;
+                selected[i][j] = 0;
+            } else {
+                u[i][j] = b;
+                selected[i][j] = 1;
+            }
+        }
+    }
+
+    static int result[100];
+    int current_w = wx;
+    for (int i = n - 1; i >= 0; i--) {
+        if (selected[i][current_w] == 1) {
+            result[i] = 1;
+            current_w -= w[i];
+        } else {
+            result[i] = 0;
+        }
+    }
+
+    x = result;
+    return x;
+};
+
+int main() {
+    int n = 5, wx = 11;
+    int w[5] = {1, 2, 5, 6, 7};
+    int v[5] = {1, 6, 18, 22, 28};
+    int *x;
+    x = KnapsackDP(w, v, n, wx);
+    for(int i = 0; i < n; i++){
+        printf("%d ", x[i]);
+    };
+    return 0;
+}
