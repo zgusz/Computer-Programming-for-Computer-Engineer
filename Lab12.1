@@ -1,0 +1,54 @@
+#include <stdio.h>
+
+int* Dijkstra(int *L, int n) {
+    int *D = new int[n]; 
+    bool *C = new bool[n];
+    for (int i = 1; i < n; i++) {
+        C[i] = true;
+        int weight = L[0 * n + i];
+        D[i] = (weight == -1) ? 999999 : weight;
+    }
+    for (int count = 0; count < n - 2; count++) {
+        int v = -1;
+        int min_dist = 1000000;
+        for (int i = 1; i < n; i++) {
+            if (C[i] && D[i] < min_dist) {
+                min_dist = D[i];
+                v = i;
+            }
+        }
+        if (v == -1) break;
+        C[v] = false;
+        for (int w = 1; w < n; w++) {
+            if (C[w]) {
+                int weight_v_w = L[v * n + w];
+                if (weight_v_w != -1) {
+                    if (D[v] + weight_v_w < D[w]) {
+                        D[w] = D[v] + weight_v_w;
+                    }
+                }
+            }
+        }
+    }
+    return D;
+}
+
+int main() {
+    int n = 5, i = 0, j = 0;
+    int *d, *g;
+    g = new int[n * n];
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++) {
+            g[i * n + j] = -1;
+        }
+    }
+    g[0 * n + 1] = 100; g[0 * n + 2] = 80;
+    g[0 * n + 3] = 30;  g[0 * n + 4] = 10;
+    g[1 * n + 2] = 25;  g[3 * n + 1] = 20;
+    g[3 * n + 2] = 40;  g[4 * n + 3] = 10;
+    d = Dijkstra(g, n);
+    for (i = 1; i < n; i++) {
+        printf("%d ",d[i]);
+    }
+    return 0;
+}
